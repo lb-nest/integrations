@@ -1,45 +1,78 @@
-import { Controller } from '@nestjs/common';
+import {
+  All,
+  Body,
+  Controller,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Query,
+} from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Request } from 'express';
 import { CreateIntegrationDto } from './dto/create-integration.dto';
 import { UpdateIntegrationDto } from './dto/update-integration.dto';
 import { Integration } from './entities/integration.entity';
 import { IntegrationService } from './integration.service';
 
-@Controller()
+@Controller('integrations')
 export class IntegrationController {
   constructor(private readonly integrationService: IntegrationService) {}
 
-  @MessagePattern('integrations.initialize')
-  initialize(): Promise<Record<string, never>> {
-    return this.integrationService.initialize(NaN, '');
-  }
-
-  @MessagePattern('integrations.create')
+  @MessagePattern('createIntegration')
   create(
-    @Payload('payload') createIntegrationDto: CreateIntegrationDto,
+    @Payload('projectId', ParseIntPipe) projectId: number,
+    @Payload() createIntegrationDto: CreateIntegrationDto,
   ): Promise<Integration> {
-    return this.integrationService.create(NaN, createIntegrationDto);
+    return this.integrationService.create(projectId, createIntegrationDto);
   }
 
-  @MessagePattern('integrations.findAll')
-  findAll(): Promise<Integration[]> {
-    return this.integrationService.findAll(NaN);
+  @MessagePattern('findAllIntegrations')
+  findAll(
+    @Payload('projectId', ParseIntPipe) projectId: number,
+  ): Promise<Integration[]> {
+    return this.integrationService.findAll(projectId);
   }
 
-  @MessagePattern('integrations.findOne')
-  findOne(@Payload('payload') id: string): Promise<Integration> {
-    return this.integrationService.findOne(NaN, id);
+  @MessagePattern('findOneIntegration')
+  findOne(
+    @Payload('projectId', ParseIntPipe) projectId: number,
+    @Payload('id', ParseUUIDPipe) id: string,
+  ): Promise<Integration> {
+    return this.integrationService.findOne(projectId, id);
   }
 
-  @MessagePattern('integrations.update')
+  @MessagePattern('updateIntegration')
   update(
-    @Payload('payload') updateIntegrationDto: UpdateIntegrationDto,
+    @Payload('projectId', ParseIntPipe) projectId: number,
+    @Payload() updateIntegrationDto: UpdateIntegrationDto,
   ): Promise<Integration> {
-    return this.integrationService.update(NaN, updateIntegrationDto);
+    return this.integrationService.update(projectId, updateIntegrationDto);
   }
 
-  @MessagePattern('integrations.remove')
-  remove(@Payload('paylaod') id: string): Promise<Integration> {
-    return this.integrationService.remove(NaN, id);
+  @MessagePattern('removeIntegration')
+  remove(
+    @Payload('projectId', ParseIntPipe) projectId: number,
+    @Payload('id', ParseUUIDPipe) id: string,
+  ): Promise<Integration> {
+    return this.integrationService.remove(projectId, id);
+  }
+
+  @All(':id/initialize')
+  async handleInitialize(
+    @Param('id') id: string,
+    @Query() query: Request['query'],
+    @Body() body: Request['body'],
+  ): Promise<any> {
+    return this.integrationService.handleInitialize(id, query, body);
+  }
+
+  @All(':id/webhook/:webhook')
+  async handleWebhook(
+    @Param('id') id: string,
+    @Param('webhook') webhook: string,
+    @Query() query: Request['query'],
+    @Body() body: Request['body'],
+  ): Promise<any> {
+    return this.integrationService.handleWebhook(id, webhook, query, body);
   }
 }

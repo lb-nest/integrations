@@ -10,9 +10,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum IntegrationType {
+  Amocrm
+  Bitrix
+}
+
 model Integration {
-  id        String @id @default(uuid())
+  id        String          @id @default(uuid())
   projectId Int
+  type      IntegrationType
+  accountId String
+  token     Json            @default("{}")
+
+  @@unique([projectId, id])
+}
+
+enum WebhookEventType {
+  ChatEvent
+  MessageEvent
+}
+
+model Webhook {
+  id        Int              @id @default(autoincrement())
+  projectId Int
+  eventType WebhookEventType
+  url       String
 
   @@unique([projectId, id])
 }
