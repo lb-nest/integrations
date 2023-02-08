@@ -2,7 +2,7 @@ import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import * as Joi from 'joi';
+import Joi from 'joi';
 import { IntegrationModule } from './integration/integration.module';
 import { PrismaService } from './prisma.service';
 import { BACKEND } from './shared/constants/broker';
