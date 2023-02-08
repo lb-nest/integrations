@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
+import { SerializeOptions } from '@nestjs/common/serializer';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { Request } from 'express';
 import { CreateIntegrationDto } from './dto/create-integration.dto';
@@ -18,6 +19,9 @@ import { IntegrationService } from './integration.service';
 export class IntegrationController {
   constructor(private readonly integrationService: IntegrationService) {}
 
+  @SerializeOptions({
+    type: Integration,
+  })
   @MessagePattern('createIntegration')
   create(
     @Payload('projectId', ParseIntPipe) projectId: number,
@@ -26,6 +30,9 @@ export class IntegrationController {
     return this.integrationService.create(projectId, createIntegrationDto);
   }
 
+  @SerializeOptions({
+    type: Integration,
+  })
   @MessagePattern('findAllIntegrations')
   findAll(
     @Payload('projectId', ParseIntPipe) projectId: number,
@@ -33,6 +40,9 @@ export class IntegrationController {
     return this.integrationService.findAll(projectId);
   }
 
+  @SerializeOptions({
+    type: Integration,
+  })
   @MessagePattern('findOneIntegration')
   findOne(
     @Payload('projectId', ParseIntPipe) projectId: number,
@@ -41,6 +51,9 @@ export class IntegrationController {
     return this.integrationService.findOne(projectId, id);
   }
 
+  @SerializeOptions({
+    type: Integration,
+  })
   @MessagePattern('updateIntegration')
   update(
     @Payload('projectId', ParseIntPipe) projectId: number,
@@ -49,6 +62,9 @@ export class IntegrationController {
     return this.integrationService.update(projectId, updateIntegrationDto);
   }
 
+  @SerializeOptions({
+    type: Integration,
+  })
   @MessagePattern('removeIntegration')
   remove(
     @Payload('projectId', ParseIntPipe) projectId: number,
